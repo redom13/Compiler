@@ -24,6 +24,13 @@ public:
 
     ~SymbolTable()
     {
+        ScopeTable *curr = current_scope;
+        while (curr != NULL)
+        {
+            ScopeTable *next = curr->parent_scope;
+            delete curr;
+            curr = next;
+        }
     }
 
     void EnterScope()
