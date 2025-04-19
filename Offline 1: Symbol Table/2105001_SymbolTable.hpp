@@ -20,38 +20,37 @@ public:
         this->num_buckets = n;
         this->total_scopes = 0;
         current_scope = NULL;
+        EnterScope(true);
     }
 
     ~SymbolTable()
     {
-        ScopeTable *curr = current_scope;
-        while (curr != NULL)
+        while (this->current_scope != NULL)
         {
-            ScopeTable *next = curr->parent_scope;
-            delete curr;
-            curr = next;
+            ExitScope(true);
         }
     }
 
-    void EnterScope()
+    void EnterScope(bool verbose = false)
     {
         this->total_scopes++;
         int id = this->total_scopes;
         this->current_scope = new ScopeTable(id, num_buckets, this->current_scope);
-        cout << "\tScopeTable# " << id << " created";
+        if (verbose)
+            cout << "\tScopeTable# " << id << " created" << endl;
     }
 
-    void ExitScope()
+    void ExitScope(bool exitRoot = false)
     {
         ScopeTable *temp = current_scope;
-        if (temp->parent_scope == NULL)
+        if (temp->parent_scope == NULL && !exitRoot)
         {
             return;
         }
         int id = temp->getId();
         current_scope = current_scope->parent_scope;
         delete temp;
-        cout << "\tScopeTable# " << id << " removed";
+        cout << "\tScopeTable# " << id << " removed" << endl;
     }
 
     bool Insert(string name, string type, bool verbose = false)
@@ -59,45 +58,58 @@ public:
         bool inserted = this->current_scope->Insert(name, type, verbose);
         if (!inserted)
         {
-            if(verbose) cout << "'" << name << "' already exists in the current ScopeTable" << endl;
+            if (verbose)
+                cout << "\t'" << name << "' already exists in the current ScopeTable" << endl;
         }
         return inserted;
     }
 
     bool Remove(string name, bool verbose = false)
     {
-        bool isRemoved = this->current_scope->Delete(name,verbose);
-        if (!isRemoved){
-            if(verbose) cout<<"Not found in the current ScopeTable"<<endl;
+        bool isRemoved = this->current_scope->Delete(name, verbose);
+        if (!isRemoved)
+        {
+            if (verbose)
+                cout << "\tNot found in the current ScopeTable" << endl;
         }
         return isRemoved;
     }
 
-    SymbolInfo* LookUp(string name,bool verbose = false){
-        ScopeTable* curr = this->current_scope;
-        SymbolInfo* found = NULL;
-        while (curr!=NULL){
-            found = curr->LookUp(name,verbose);
-            if (found!=NULL){
+    SymbolInfo *LookUp(string name, bool verbose = false)
+    {
+        ScopeTable *curr = this->current_scope;
+        SymbolInfo *found = NULL;
+        while (curr != NULL)
+        {
+            found = curr->LookUp(name, verbose);
+            if (found != NULL)
+            {
                 break;
             }
             curr = curr->parent_scope;
         }
-        if (found==NULL){
-            if(verbose) cout<<"'"<<name<<"'"<<" not found in any of the ScopeTables"<<endl;
+        if (found == NULL)
+        {
+            if (verbose)
+                cout << "\t'" << name << "'" << " not found in any of the ScopeTables" << endl;
         }
         return found;
     }
 
-    void PrintCurrentScopeTable(){
-        this->current_scope->Print();
+    void PrintCurrentScopeTable(int tabs = 1)
+    {
+        this->current_scope->Print(tabs);
     }
 
-    void PrintAllScopeTables(){
-        ScopeTable* curr = this->current_scope;
-        while (curr!=NULL){
-            curr->Print();
-            curr=curr->parent_scope;
+    void PrintAllScopeTables()
+    {
+        ScopeTable *curr = this->current_scope;
+        int tabs = 1;
+        while (curr != NULL)
+        {
+            curr->Print(tabs);
+            curr = curr->parent_scope;
+            tabs++;
         }
     }
 };
