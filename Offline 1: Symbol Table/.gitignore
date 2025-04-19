@@ -1,3 +1,5 @@
 *.exe
 *.out
-input2.txt
+*.txt
+!sample_input.txt
+!sample_output.txt

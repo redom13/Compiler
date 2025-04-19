@@ -18,11 +18,18 @@ vector<string> split(const string &s)
     return tokens;
 }
 
-int main()
+int main(int argc, char *argv[]) // Modified main to accept command-line arguments
 {
-    string input_filename = "sample_input.txt";
-    // string input_filename = "input2.txt";
-    string output_filename = "sample_output.txt";
+    string input_filename;
+    string output_filename;
+
+    if (argc != 3) {
+        cerr << "Usage: " << argv[0] << " <input_filename> <output_filename>" << endl;
+        return 1;
+    } else {
+        input_filename = argv[1];
+        output_filename = argv[2];
+    }
 
     int num_buckets;
 
