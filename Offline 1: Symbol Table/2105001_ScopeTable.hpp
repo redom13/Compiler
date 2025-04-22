@@ -14,6 +14,8 @@ class ScopeTable
     int id;
     int num_buckets;
     SymbolInfo **hashTable;
+    uint64_t (*hashFunction)(string, uint64_t);
+    int collisions;
 
     void printTabs(int n)
     {
@@ -26,12 +28,14 @@ class ScopeTable
 public:
     ScopeTable *parent_scope;
 
-    ScopeTable(int id, int n, ScopeTable *parent_scope = NULL)
+    ScopeTable(int id, int n, ScopeTable *parent_scope = NULL, uint64_t (*hashFunction)(string, uint64_t) = Hash::sdbm_hash)
     {
         this->id = id;
         this->num_buckets = n;
         this->hashTable = new SymbolInfo *[num_buckets];
         this->parent_scope = parent_scope;
+        this->hashFunction = hashFunction;
+        this->collisions = 0;
 
         for (int i = 0; i < num_buckets; i++)
         {
@@ -57,7 +61,7 @@ public:
 
     int getIndex(string key)
     {
-        return Hash::sdbm_hash(key,num_buckets) % num_buckets;
+        return this->hashFunction(key,num_buckets) % num_buckets;
     }
 
     int getId()
@@ -118,6 +122,7 @@ public:
             }
             else
             {
+                this->collisions++;
                 pos = 1;
                 while (curr->next != NULL)
                 {
@@ -195,6 +200,11 @@ public:
             }
             cout << endl;
         }
+    }
+
+    int getCollisions()
+    {
+        return this->collisions;
     }
 };
 
