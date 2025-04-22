@@ -57,7 +57,7 @@ public:
 
     int getIndex(string key)
     {
-        return Hash::sdbm_hash(key) % num_buckets;
+        return Hash::sdbm_hash(key,num_buckets) % num_buckets;
     }
 
     int getId()
