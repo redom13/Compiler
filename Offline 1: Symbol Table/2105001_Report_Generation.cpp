@@ -5,20 +5,6 @@
 
 using namespace std;
 
-vector<string> split(const string &s)
-{
-    vector<string> tokens;
-    stringstream ss(s);
-    string token;
-    while (ss >> token)
-    {
-        // cout<<token<<endl;
-        tokens.push_back(token);
-    }
-    // cout<<"Split successfully"<<endl;
-    return tokens;
-}
-
 int main() // Modified main to accept command-line arguments
 {
     string input_filename = "input2.txt";
@@ -33,14 +19,14 @@ int main() // Modified main to accept command-line arguments
         "fnv1a_hash",
         "jenkins_hash"};
 
-
     // if (!freopen(output_filename.c_str(), "w", stdout))
     // {
     //     cerr << "Error: Could not open output file: " << output_filename << endl;
     //     return 1;
     // }
     ofstream reportFile(output_filename);
-    if (!reportFile.is_open()) {
+    if (!reportFile.is_open())
+    {
         cerr << "Error: Could not open output file: " << output_filename << endl;
         return 1;
     }
@@ -50,11 +36,12 @@ int main() // Modified main to accept command-line arguments
     for (int i = 0; i < 3; i++)
     {
         ifstream inputFile(input_filename);
-        if (!inputFile.is_open()) {
+        if (!inputFile.is_open())
+        {
             // Print error to the redirected stdout (report file)
             cout << "Error: Could not open input file: " << input_filename << " for " << hashFunctionNames[i] << endl;
             cerr << "Error: Could not open input file: " << input_filename << " for " << hashFunctionNames[i] << endl; // Also to stderr
-            continue; // Skip to the next hash function
+            continue;                                                                                                  // Skip to the next hash function
         }
 
         int num_buckets;
@@ -63,8 +50,8 @@ int main() // Modified main to accept command-line arguments
         {
             cout << "Error: Invalid or missing input for number of buckets in " << input_filename << endl;
             cerr << "Error: Invalid or missing input for number of buckets in " << input_filename << endl; // Also to stderr
-            inputFile.close(); // Close the file before continuing/exiting
-            continue; // Skip to the next hash function
+            inputFile.close();                                                                             // Close the file before continuing/exiting
+            continue;                                                                                      // Skip to the next hash function
         }
         if (num_buckets <= 0)
         {
@@ -87,9 +74,23 @@ int main() // Modified main to accept command-line arguments
             cmd_count++;
             cout << "Cmd " << cmd_count << ": " << command << endl;
 
-            vector<string> tokens = split(command);
+            stringstream ss(command);
+            int cmd_len = 0;
+            string token;
+            while (ss >> token)
+            {
+                cmd_len++;
+            }
+            // cout << "Command Length: " << cmd_len << endl;
+            ss.clear();
+            ss.str(command);
+            string tokens[cmd_len];
+            int i = 0;
+            while (ss >> tokens[i])
+            {
+                i++;
+            }
             string op = tokens[0];
-            int cmd_len = tokens.size();
 
             if (op == "I")
             {
@@ -152,7 +153,7 @@ int main() // Modified main to accept command-line arguments
                     type = tokens[2];
                 }
                 // cout<<"Type: "<<type<<endl;
-                symbolTable->Insert(name, type,true);
+                symbolTable->Insert(name, type, true);
             }
             else if (op == "L")
             {
@@ -181,7 +182,7 @@ int main() // Modified main to accept command-line arguments
                     cout << "\tNumber of parameters mismatch for the command " << op << endl;
                     continue;
                 }
-                symbolTable->EnterScope(hashFunctions[i]);
+                symbolTable->EnterScope();
             }
             else if (op == "E")
             {
@@ -220,7 +221,7 @@ int main() // Modified main to accept command-line arguments
                     cout << "\tNumber of parameters mismatch for the command " << op << endl;
                     continue;
                 }
-                reportFile << hashFunctionNames[i] <<"\t\t\t\t" << symbolTable->getMeanCollisions() << endl;
+                reportFile << hashFunctionNames[i] << "\t\t\t\t" << symbolTable->getMeanCollisions() << endl;
                 delete symbolTable;
                 // cout << "Exiting..." << endl;
                 break;

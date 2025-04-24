@@ -24,7 +24,7 @@ public:
         this->total_scopes = 0;
         this->total_collisions = 0;
         current_scope = NULL;
-        EnterScope(verbose,hashFunction);
+        EnterScope(verbose);
     }
 
     ~SymbolTable()
@@ -35,11 +35,11 @@ public:
         }
     }
 
-    void EnterScope(bool verbose = false,uint64_t (*hashFunction)(string, uint64_t)=Hash::sdbm_hash)
+    void EnterScope(bool verbose = false)
     {
         this->total_scopes++;
         int id = this->total_scopes;
-        this->current_scope = new ScopeTable(id, num_buckets, this->current_scope, hashFunction);
+        this->current_scope = new ScopeTable(id, num_buckets, this->current_scope, this->hashFunction);
         if (verbose)
             cout << "\tScopeTable# " << id << " created" << endl;
     }
