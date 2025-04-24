@@ -4,29 +4,18 @@
 
 using namespace std;
 
-vector<string> split(const string &s)
-{
-    vector<string> tokens;
-    stringstream ss(s);
-    string token;
-    while (ss >> token)
-    {
-        // cout<<token<<endl;
-        tokens.push_back(token);
-    }
-    // cout<<"Split successfully"<<endl;
-    return tokens;
-}
-
 int main(int argc, char *argv[]) // Modified main to accept command-line arguments
 {
     string input_filename;
     string output_filename;
 
-    if (argc != 3) {
+    if (argc != 3)
+    {
         cerr << "Usage: " << argv[0] << " <input_filename> <output_filename>" << endl;
         return 1;
-    } else {
+    }
+    else
+    {
         input_filename = argv[1];
         output_filename = argv[2];
     }
@@ -69,9 +58,27 @@ int main(int argc, char *argv[]) // Modified main to accept command-line argumen
         cmd_count++;
         cout << "Cmd " << cmd_count << ": " << command << endl;
 
-        vector<string> tokens = split(command);
+        // vector<string> tokens = split(command);
+        // string op = tokens[0];
+        // int cmd_len = tokens.size();
+        stringstream ss(command);
+        int cmd_len = 0;
+        string token;
+        while (ss >> token)
+        {
+            cmd_len++;
+        }
+        // cout << "Command Length: " << cmd_len << endl;
+        ss.clear();
+        ss.str(command);
+        string tokens[cmd_len];
+        int i = 0;
+        while (ss >> tokens[i])
+        {
+            i++;
+        }
         string op = tokens[0];
-        int cmd_len = tokens.size();
+        // cout << "Operation: " << op << endl;
 
         if (op == "I")
         {
@@ -120,11 +127,11 @@ int main(int argc, char *argv[]) // Modified main to accept command-line argumen
                     {
                         if (i != arg_len - 1)
                         {
-                            type += "(" + tokens[3 + 2*i] + "," + tokens[4 + 2*i] + "),";
+                            type += "(" + tokens[3 + 2 * i] + "," + tokens[4 + 2 * i] + "),";
                         }
                         else
                         {
-                            type += "(" + tokens[3 + 2*i] + "," + tokens[4 + 2*i] + ")}";
+                            type += "(" + tokens[3 + 2 * i] + "," + tokens[4 + 2 * i] + ")}";
                         }
                     }
                 }

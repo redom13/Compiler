@@ -12,15 +12,19 @@ class SymbolTable
 {
     int num_buckets;
     int total_scopes;
+    int total_collisions;
     ScopeTable *current_scope;
+    uint64_t (*hashFunction)(string, uint64_t);
 
 public:
-    SymbolTable(int n)
+    SymbolTable(int n, uint64_t (*hashFunction)(string, uint64_t) = Hash::sdbm_hash,bool verbose = true)
     {
+        this->hashFunction = hashFunction;
         this->num_buckets = n;
         this->total_scopes = 0;
+        this->total_collisions = 0;
         current_scope = NULL;
-        EnterScope(true);
+        EnterScope(verbose,hashFunction);
     }
 
     ~SymbolTable()
@@ -31,11 +35,11 @@ public:
         }
     }
 
-    void EnterScope(bool verbose = false)
+    void EnterScope(bool verbose = false,uint64_t (*hashFunction)(string, uint64_t)=Hash::sdbm_hash)
     {
         this->total_scopes++;
         int id = this->total_scopes;
-        this->current_scope = new ScopeTable(id, num_buckets, this->current_scope);
+        this->current_scope = new ScopeTable(id, num_buckets, this->current_scope, hashFunction);
         if (verbose)
             cout << "\tScopeTable# " << id << " created" << endl;
     }
@@ -49,17 +53,23 @@ public:
         }
         int id = temp->getId();
         current_scope = current_scope->parent_scope;
+        // total_collisions += temp->getCollisions();
         delete temp;
         cout << "\tScopeTable# " << id << " removed" << endl;
     }
 
     bool Insert(string name, string type, bool verbose = false)
     {
+        int prev_collisions = this->current_scope->getCollisions();
         bool inserted = this->current_scope->Insert(name, type, verbose);
         if (!inserted)
         {
             if (verbose)
                 cout << "\t'" << name << "' already exists in the current ScopeTable" << endl;
+        }
+        if (prev_collisions != this->current_scope->getCollisions())
+        {
+            this->total_collisions++;
         }
         return inserted;
     }
@@ -111,6 +121,11 @@ public:
             curr = curr->parent_scope;
             tabs++;
         }
+    }
+
+    float getMeanCollisions()
+    {
+        return (float)this->total_collisions;
     }
 };
 
