@@ -191,11 +191,11 @@ public:
         for (int i = 0; i < num_buckets; i++)
         {
             printTabs(tabs);
-            cout << i + 1 << "-->";
+            cout << i + 1 << "--> ";
             SymbolInfo *curr = this->hashTable[i];
             while (curr != NULL)
             {
-                cout << " <" << curr->getName() << "," << curr->getType() << ">";
+                cout << "<" << curr->getName() << "," << curr->getType() << "> ";
                 curr = curr->next;
             }
             cout << endl;

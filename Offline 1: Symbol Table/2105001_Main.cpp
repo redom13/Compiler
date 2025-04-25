@@ -8,16 +8,37 @@ int main(int argc, char *argv[]) // Modified main to accept command-line argumen
 {
     string input_filename;
     string output_filename;
+    uint64_t (*hashFunction)(string, uint64_t) = Hash::sdbm_hash;
 
-    if (argc != 3)
+    if (argc != 3 && argc != 4)
     {
-        cerr << "Usage: " << argv[0] << " <input_filename> <output_filename>" << endl;
+        cerr << "Usage: " << argv[0] << " <input_filename> <output_filename> [hash_function]" << endl;
         return 1;
     }
     else
     {
         input_filename = argv[1];
         output_filename = argv[2];
+        if (argc == 4){
+            string hash_function = argv[3];
+            if (hash_function == "sdbm_hash")
+            {
+                hashFunction = Hash::sdbm_hash;
+            }
+            else if (hash_function == "fnv1a_hash")
+            {
+                hashFunction = Hash::fnv1a_hash;
+            }
+            else if (hash_function == "jenkins_hash")
+            {
+                hashFunction = Hash::jenkins_hash;
+            }
+            else
+            {
+                cerr << "Error: Invalid hash function specified. Using default sdbm_hash." << endl;
+                hashFunction = Hash::sdbm_hash;
+            }
+        }
     }
 
     int num_buckets;
@@ -45,7 +66,7 @@ int main(int argc, char *argv[]) // Modified main to accept command-line argumen
     }
     cin.ignore();
 
-    SymbolTable *symbolTable = new SymbolTable(num_buckets);
+    SymbolTable *symbolTable = new SymbolTable(num_buckets, hashFunction);
     int cmd_count = 0;
     string command;
 

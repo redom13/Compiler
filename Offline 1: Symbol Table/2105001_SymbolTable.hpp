@@ -125,7 +125,7 @@ public:
 
     float getMeanCollisions()
     {
-        return (float)this->total_collisions;
+        return (float)this->total_collisions / (float)this->total_scopes;
     }
 };
 
