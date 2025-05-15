@@ -1,0 +1,8 @@
+.vscode/
+*.out
+in.txt
+input.txt
+out.txt
+practice.l
+test
+test.cpp
